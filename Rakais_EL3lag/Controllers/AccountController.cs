@@ -43,10 +43,10 @@ namespace Rakais_EL3lag.Controllers
                         SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("mohamedfouad@mohamed12345Ibra$2463187"));
 
                         SigningCredentials signing = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
+                        var expiration = UserLogin.RememberMe ? DateTime.Now.AddDays(7) : DateTime.Now.AddHours(1);
                         JwtSecurityToken Token = new JwtSecurityToken(
                             issuer: "http://localhost:5298/",
-                            expires: DateTime.Now.AddHours(1),
+                            expires: expiration,
                             claims: UserClaims,
                             signingCredentials: signing
                                );
@@ -54,7 +54,7 @@ namespace Rakais_EL3lag.Controllers
                             new
                             {
                                 token = new JwtSecurityTokenHandler().WriteToken(Token),
-                                expiration = DateTime.Now.AddHours(1)
+                                expiration = expiration
                             }
                             );
                     }

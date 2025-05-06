@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Rakais_EL3lag.Models;
+using Rakais_EL3lag.Seed;
 using System.Text;
 
 namespace Rakais_EL3lag
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +49,7 @@ namespace Rakais_EL3lag
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -62,6 +63,7 @@ namespace Rakais_EL3lag
 
 
             app.MapControllers();
+            await DbSeeder.SeedAdminAsync(app.Services);
 
             app.Run();
         }
