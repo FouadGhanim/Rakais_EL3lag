@@ -1,7 +1,10 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Rakais_EL3lag.Models;
+using System.Text;
 
 namespace Rakais_EL3lag
 {
@@ -11,9 +14,33 @@ namespace Rakais_EL3lag
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
+
             builder.Services.AddDbContext<RakaizContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("Rakaiz"))
             );
+
+            builder.Services.AddAuthentication(options => {
+                //Check JWT Token Header
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                //[authrize]
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;//unauth
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>//verified key
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["JWT:IssuerIP"],
+
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecritKey"]))
+
+                };
+            });
             builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddEntityFrameworkStores<RakaizContext>().AddDefaultTokenProviders();
             // Add services to the container.
 
